@@ -1,6 +1,7 @@
 {
   "name": "cvitaede-cloudcircles",
   "main": "cvitaede-cloudcircles.html",
+  "keywords": "web-components",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
     "polymerfire": "firebase/polymerfire#^0.10.3"
