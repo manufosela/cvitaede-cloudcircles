@@ -8,7 +8,7 @@
       justify-content: center;
     }
     
-     :host div {
+     :host div.circle {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -17,11 +17,12 @@
       border-radius: 50%;
       text-shadow: 2px 2px 4px black;
       text-transform: capitalize;
+      text-align: center;
     }
 
     </style>
     <template is="dom-repeat" items="{{elements}}">
-      <div style="width:{{item.value}}px; height:{{item.value}}px; background:{{item.bg}};">{{item.name}}</div>
+      <div class="circle" style="width:{{item.value}}px; height:{{item.value}}px; background:{{item.bg}}; font-size:{{item.fontsize}}">{{item.name}}</div>
     </template>
   </template>
 
@@ -38,32 +39,53 @@
           var elements = [];
           var val;
           var bg;
-          var col;
-          var r;
-          var g;
-          var b;
-          var r1;
-          var b1;
-          var g1;
           for (var i = 0; i < nEl; i++) {
             val = parseInt(Math.random() * 100) + 50;
-            r = parseInt(Math.random() * 255);
-            g = parseInt(Math.random() * 255);
-            b = parseInt(Math.random() * 255);
-            bg = "rgba(" + r + "," + g + "," + b + "," + val / 150 + ")";
+            bg = this._getRandomColor(val);
             elements.push({
               "name": "Circle " + i,
               "value": val,
               "bg": bg
             });
           }
-          return elements;
+          return this._calcFontSizes(elements);
         }
       }
     },
-
-    attached: function() {
-
+    _getRandomColor: function(val) {
+      var bg;
+      var r,g,b;
+      r = parseInt(Math.random() * 255);
+      g = parseInt(Math.random() * 255);
+      b = parseInt(Math.random() * 255);
+      bg = "rgba(" + r + "," + g + "," + b + "," + val / 150 + ")";
+      return bg;
+    },
+    attached: function(){
+      var els = this.queryAllEffectiveChildren('cloud-circle');
+      if (els.length) {
+        var elements = [];
+        var name, val, bg;
+        els.forEach(
+          function(item) {
+            name = (item.attributes.name) ? item.attributes.name.value : 'NoName ' + parseInt(Math.random() * 10);
+            val = (item.attributes.value) ? item.attributes.value.value : parseInt(Math.random() * 100) + 50;
+            bg = this._getRandomColor(val);
+            elements.push({"name":name, "value":val, "bg": bg});
+          }.bind(this)
+        )
+        this.elements = this._calcFontSizes(elements);
+      }
+    },
+    _calcFontSizes: function(elements) {
+      var m = Math.max.apply(Math, elements.map(function(o){ return o.value; }));
+      elements = elements.map(
+        function(item) {
+          item.fontsize = (item.value * 2 / m )+"rem";
+           return item;
+        }
+      );
+      return elements;
     }
   });
 
